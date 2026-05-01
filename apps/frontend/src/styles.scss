@@ -1,0 +1,21 @@
+// Sentinel Hooks — global styles
+
+:root {
+    --sh-color-bg: #ffffff;
+    --sh-color-fg: #0a0a0a;
+    --sh-color-primary: #2563eb;
+    --sh-radius-md: 0.5rem;
+}
+
+[data-theme='dark'] {
+    --sh-color-bg: #0a0a0a;
+    --sh-color-fg: #fafafa;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--sh-color-bg);
+    color: var(--sh-color-fg);
+}

@@ -1,0 +1,80 @@
+# Sentinel Hooks — stack DEV complète avec hot-reload.
+# Lancer depuis la racine : `make up` (ou `docker compose -f infra/docker-compose.yml up`).
+
+name: sentinel
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sentinel-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sentinel
+      POSTGRES_USER: sentinel
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentinel -d sentinel"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: sentinel-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: sentinel
+      RABBITMQ_DEFAULT_PASS: dev
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    container_name: sentinel-backend
+    build:
+      context: ../apps/backend
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SENTINEL_DB_URL: jdbc:postgresql://postgres:5432/sentinel
+      SENTINEL_DB_USERNAME: sentinel
+      SENTINEL_DB_PASSWORD: dev
+    ports:
+      - "8080:8080"
+      - "35729:35729"  # LiveReload
+      - "5005:5005"    # Debug JDWP optionnel
+    volumes:
+      # L'IDE compile dans target/classes — devtools détecte le changement et reload (~1-2s).
+      - ../apps/backend/target/classes:/app/classes:ro
+      - ../apps/backend/target/dependency:/app/dependencies:ro
+
+  frontend:
+    container_name: sentinel-frontend
+    build:
+      context: ../apps/frontend
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    ports:
+      - "4200:4200"
+    volumes:
+      - ../apps/frontend:/app
+      - /app/node_modules
+
+volumes:
+  postgres-data:

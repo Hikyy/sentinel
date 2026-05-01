@@ -1,0 +1,9 @@
+# syntax=docker/dockerfile:1.7
+FROM node:20-alpine
+WORKDIR /app
+RUN apk add --no-cache git
+ENV CHOKIDAR_USEPOLLING=true \
+    WATCHPACK_POLLING=true
+EXPOSE 4200
+# Le code source est bind-mounté au runtime via docker-compose.
+CMD ["sh", "-c", "(test -d node_modules || npm ci || npm install) && npm start"]

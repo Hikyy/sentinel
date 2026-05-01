@@ -1,0 +1,76 @@
+# Sentinel Hooks — .gitignore
+
+# === IDE & OS ===
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# === Java / Maven / Gradle ===
+target/
+build/
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*.log
+.gradle/
+.mvn/wrapper/maven-wrapper.jar
+
+# === Spring Boot ===
+*.log
+*.log.*
+logs/
+spring-boot.log
+**/src/main/resources/application-local.yml
+**/src/main/resources/application-secret.yml
+
+# === Node / Angular ===
+node_modules/
+dist/
+.angular/
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+.cache/
+
+# === Docker ===
+*.pid
+docker-compose.override.yml
+
+# === Secrets / env ===
+.env
+.env.local
+.env.*.local
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+secrets/
+
+# === Caches outils dev ===
+.parcel-cache/
+.turbo/
+.next/
+
+
+# === Tests temporaires ===
+/tmp/
+*.tmp
+
+# === Documentation générée ===
+javadoc/
+target/site/
+
+# === Bases de données locales ===
+*.db
+*.sqlite
+*.h2.db
+*.h2.mv.db
+data/postgres/
+data/redis/
+data/rabbitmq/

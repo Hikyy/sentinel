@@ -1,0 +1,26 @@
+pre-commit:
+  parallel: true
+  commands:
+    prettier:
+      root: apps/frontend
+      glob: "src/**/*.{ts,html,scss,json}"
+      run: npx prettier --check "src/**/*.{ts,html,scss,json}"
+
+    eslint:
+      root: apps/frontend
+      glob: "src/**/*.{ts,html}"
+      run: npx eslint src/ --ext .ts,.html --max-warnings 0
+
+commit-msg:
+  commands:
+    conventional-commits:
+      run: |
+        msg=$(cat {1})
+        pattern='^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)(\(.+\))?(!)?: .{1,100}$'
+        if ! echo "$msg" | grep -qE "$pattern"; then
+          echo "❌ Message de commit invalide."
+          echo "   Format attendu : <type>(<scope>): <description>"
+          echo "   Types valides  : feat | fix | docs | style | refactor | perf | test | chore | build | ci | revert"
+          echo "   Exemple        : feat(webhook): add HMAC-SHA256 signature verification"
+          exit 1
+        fi

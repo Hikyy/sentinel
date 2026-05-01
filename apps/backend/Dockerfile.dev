@@ -1,0 +1,19 @@
+# syntax=docker/dockerfile:1.7
+# Image dev avec spring-boot-devtools.
+# L'IDE compile dans target/classes — le bind-mount expose ce dossier au container.
+# Devtools détecte le changement et recharge la JVM en ~1-2s.
+
+FROM eclipse-temurin:21-jdk-alpine
+
+RUN apk add --no-cache bash curl
+
+WORKDIR /app
+
+ENV SPRING_PROFILES_ACTIVE=dev \
+    JAVA_TOOL_OPTIONS="-XX:TieredStopAtLevel=1 -XX:+EnableDynamicAgentLoading"
+
+EXPOSE 8080 35729
+
+# Le classpath est constitué de target/classes (bind-mount) + dépendances Maven (bind-mount).
+# Aucun jar n'est packagé ici — c'est l'IDE/Maven hôte qui compile.
+CMD ["sh", "-c", "java -cp '/app/classes:/app/dependencies/*' io.sentinelhooks.SentinelApplication"]
