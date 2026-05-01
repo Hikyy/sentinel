@@ -8,6 +8,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class SentinelApplicationTest {
 
-    @Test
-    void contextLoads() {}
+  @Test
+  void contextLoads() {}
 }
